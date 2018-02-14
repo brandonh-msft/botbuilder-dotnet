@@ -11,28 +11,29 @@ namespace Microsoft.Bot.Samples.Simplified.Asp.Controllers
     [Route("api/[controller]")]
     public class MessagesController : BotController
     {
-        public MessagesController(Builder.Bot bot)
-            : base(bot)
-        {
-        }
+        public MessagesController(Builder.Bot bot) : base(bot) { }
 
-        protected override Task ReceiveMessage(IBotContext context, IMessageActivity activity)
+        protected override Task OnReceiveActivity(IBotContext context)
         {
-            long turnNumber = context.State.Conversation["turnNumber"] ?? 0;
-            context.State.Conversation["turnNumber"] = ++turnNumber;
-            context.Reply($"[{turnNumber}] echo: {activity.Text}");
-            return Task.CompletedTask;
-        }
-
-        protected override Task ReceiveConversationUpdate(IBotContext context, IConversationUpdateActivity activity)
-        {
-            foreach (var newMember in activity.MembersAdded)
+            if (context.Request.Type == ActivityTypes.Message)
             {
-                if (newMember.Id != activity.Recipient.Id)
+                var activity = context.Request.AsMessageActivity();
+                long turnNumber = context.State.Conversation["turnNumber"] ?? 0;
+                context.State.Conversation["turnNumber"] = ++turnNumber;
+                context.Reply($"[{turnNumber}] echo: {activity.Text}");
+            }
+            else if (context.Request.Type == ActivityTypes.ConversationUpdate)
+            {
+                var actvity = context.Request.AsConversationUpdateActivity();
+                foreach (var newMember in actvity.MembersAdded)
                 {
-                    context.Reply("Hello and welcome to the echo bot.");
+                    if (newMember.Id != actvity.Recipient.Id)
+                    {
+                        context.Reply("Hello and welcome to the echo bot.");
+                    }
                 }
             }
+
             return Task.CompletedTask;
         }
     }
