@@ -21,7 +21,8 @@ namespace Microsoft.Bot.Samples.Simplified.Asp
             bot.OnReceive(BotReceiveHandler);
         }
 
-        private Task BotReceiveHandler(IBotContext context, MiddlewareSet.NextDelegate next) => OnReceiveActivity(context);
+        protected virtual Task BotReceiveHandler(IBotContext context) => OnReceiveActivity(context);
+
         protected abstract Task OnReceiveActivity(IBotContext context);
 
         [HttpPost]
@@ -35,10 +36,6 @@ namespace Microsoft.Bot.Samples.Simplified.Asp
             catch (UnauthorizedAccessException)
             {
                 return this.Unauthorized();
-            }
-            catch (InvalidOperationException e)
-            {
-                return this.NotFound(e.Message);
             }
         }
     }
