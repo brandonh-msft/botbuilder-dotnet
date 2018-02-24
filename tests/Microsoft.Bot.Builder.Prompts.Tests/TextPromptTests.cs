@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Storage;
-using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Prompts.Tests
@@ -13,7 +12,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
     [TestClass]
     [TestCategory("Prompts")]
     [TestCategory("Text Prompts")]
-    public class TextPrompTests
+    public class TextPromptTests
     {
         [TestMethod]
         public async Task SimpleRecognize()
@@ -26,7 +25,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .AssertReply("Your Name:")
                 .Send("test test test")
                 .AssertReply("Passed")
-                .AssertReply("test test test")                
+                .AssertReply("test test test")
                 .StartTest();
         }
 
@@ -40,7 +39,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .Send("hello")
                 .AssertReply("Your Name:")
                 .Send("1")
-                .AssertReply("Failed")                
+                .AssertReply("Failed")
                 .StartTest();
         }
         [TestMethod]
@@ -69,44 +68,42 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .Send("hello")
                 .AssertReply("Your Name:")
                 .Send(" ")
-                .AssertReply("Failed")                
+                .AssertReply("Failed")
                 .StartTest();
         }
 
         public async Task MyTestPrompt(IBotContext context)
         {
-            TextPrompt askForName = new TextPrompt();
             if (context.State.ConversationProperties["topic"] != "textPromptTest")
             {
-                context.State.ConversationProperties["topic"] = "textPromptTest";                
-                await askForName.Prompt(context, "Your Name:");
+                context.State.ConversationProperties["topic"] = "textPromptTest";
+                context.PromptText("Your Name:");
             }
             else
             {
-                var (Passed, Value) = await askForName.Recognize(context); 
-                if (Passed)
+                var msg = context.Request.AsMessageActivity();
+                if (!string.IsNullOrWhiteSpace(msg.Text))
                 {
                     context.Reply("Passed");
-                    context.Reply(Value);
+                    context.Reply(msg.Text);
                 }
                 else
                 {
-                    context.Reply("Failed"); 
+                    context.Reply("Failed");
                 }
             }
         }
 
         public async Task LengthCheckPromptTest(IBotContext context)
         {
-            TextPrompt askForName = new TextPrompt(MinLengthValidator);
             if (context.State.ConversationProperties["topic"] != "textPromptTest")
             {
                 context.State.ConversationProperties["topic"] = "textPromptTest";
-                await askForName.Prompt(context, "Your Name:");
+                context.PromptText("Your Name:");
             }
             else
             {
-                var (Passed, Value) = await askForName.Recognize(context);
+                var (Passed, Value) = await context.ValidatePromptReply(MinLengthValidator);
                 if (Passed)
                 {
                     context.Reply("Passed");
@@ -121,7 +118,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
 
         public async Task<(bool Passed, string Value)> MinLengthValidator(IBotContext context, string toValidate)
         {
-            return (toValidate.Length > 5, toValidate); 
+            return (toValidate.Length > 5, toValidate);
         }
     }
 }

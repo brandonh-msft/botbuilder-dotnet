@@ -15,45 +15,22 @@ namespace Microsoft.Bot.Builder.Prompts
     /// constructor. If the standard validation passes, the custom PromptValidator
     /// will be called. 
     /// </summary>
-    public class TextPrompt 
+    public static class TextPromptEx
     {
-        private readonly PromptValidator<string, string> _customValidator = null;
-
-        /// <summary>
-        /// Creates a new instance of a TextPrompt. 
-        /// </summary>
-        public TextPrompt()
-        {
-        }
-
-        /// <summary>
-        /// Creates a new instance of a TextPrompt allowing a custom validator
-        /// to be specified. The custom validator will ONLY be called if the
-        /// Validate method on the class first passes. 
-        /// </summary>
-        public TextPrompt(PromptValidator<string, string> validator)
-        {
-            _customValidator = validator ?? throw new ArgumentNullException(nameof(validator)); 
-        }
-
         /// <summary>
         /// Creates a new Message, and queues it for sending to the user. 
         /// </summary>
-        public Task Prompt(IBotContext context, string text, string speak = null)
+        public static void PromptText(this IBotContext context, string text, string speak = null)
         {
             IMessageActivity activity = MessageFactory.Text(text, speak);
             activity.InputHint = InputHints.ExpectingInput;
-            return Prompt(context, activity);
+            PromptText(context, activity);
         }
 
         /// <summary>
         /// Creates a new Message Activity, and queues it for sending to the user. 
         /// </summary>
-        public Task Prompt(IBotContext context, IMessageActivity activity)
-        {
-            context.Responses.Add(activity);
-            return Task.CompletedTask;
-        }
+        public static void PromptText(this IBotContext context, IMessageActivity activity) => context.Responses.Add(activity);
 
         /// <summary>
         /// Used to validate the incoming text, expected on context.Request, is
@@ -70,40 +47,20 @@ namespace Microsoft.Bot.Builder.Prompts
         /// DateTime recoginizers, and other types. Because value types are 
         /// non-nullable, the common pattern of returning null breaks down in 
         /// those scenarios.
+        /// If validation is not required, simply request <c>context.Request.AsMessageActivity().Text</c>
+        /// to get the user's reply.
         /// </remarks>
-        public Task<(bool Passed, string Value)> Recognize(IBotContext context)
+        public static async Task<(bool Passed, string Value)> ValidatePromptReply(this IBotContext context, PromptValidator<string, string> validator)
         {
-            BotAssert.ContextNotNull(context); 
+            if (validator == null) throw new ArgumentNullException(nameof(validator));
+
+            BotAssert.ContextNotNull(context);
             BotAssert.ActivityNotNull(context.Request);
+
             if (context.Request.Type != ActivityTypes.Message)
                 throw new InvalidOperationException("No Message to Recognize");
 
-            IMessageActivity message = context.Request.AsMessageActivity();
-
-            if (_customValidator == null)
-            {
-                // No additional validator. Just call the virtual method. 
-                return this.Validate(context, message);
-            }
-            else
-            {
-                return _customValidator(context, message.Text);
-            }            
-        }
-
-        protected virtual async Task<(bool Passed, string Value)> Validate(IBotContext context, IMessageActivity activity)
-        {
-            if (string.IsNullOrWhiteSpace(activity.Text))
-            {
-                // Validation failed. 
-                return (Passed: false, Value: activity.Text);
-            }
-            else
-            {
-                // Validation passed. Return the validated text.
-                return (Passed: true, Value: activity.Text);
-            }
-
+            return await validator(context, context.Request.AsMessageActivity().Text);
         }
     }
 }
