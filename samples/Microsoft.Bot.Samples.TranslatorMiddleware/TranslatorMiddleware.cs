@@ -68,14 +68,13 @@ namespace Microsoft.Bot.Samples.TranslatorMiddleware
             {
                 try
                 {
-                    var translatedMessages = await Task.WhenAll(
+                    await Task.WhenAll(
                         activities.Where(a => a.AsMessageActivity() != null)
-                            .Select(activity => Translate(activity.AsMessageActivity().Text, _botLanguage, language)));
-
-                    for (int i = 0; i < translatedMessages.Length; i++)
-                    {
-                        activities[i].AsMessageActivity().Text = translatedMessages[i];
-                    }
+                            .Select(async activity =>
+                            {
+                                activity.AsMessageActivity().Text = await Translate(activity.AsMessageActivity().Text, _botLanguage, language);
+                            }
+                    ));
 
                 }
                 catch (Exception err)
