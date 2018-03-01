@@ -40,6 +40,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector.Tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Samples.Ai.QnA", "samples\Microsoft.Bot.Samples.Ai.QnA\Microsoft.Bot.Samples.Ai.QnA.csproj", "{A8CE6B0F-E054-45F7-B4D7-23D2C65D2D26}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Samples.AzureFunction", "samples\Microsoft.Bot.Samples.AzureFunction\Microsoft.Bot.Samples.AzureFunction.csproj", "{D3E619E1-49F1-41F9-B072-E05449059618}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -110,6 +112,10 @@ Global
 		{A8CE6B0F-E054-45F7-B4D7-23D2C65D2D26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8CE6B0F-E054-45F7-B4D7-23D2C65D2D26}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A8CE6B0F-E054-45F7-B4D7-23D2C65D2D26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3E619E1-49F1-41F9-B072-E05449059618}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3E619E1-49F1-41F9-B072-E05449059618}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3E619E1-49F1-41F9-B072-E05449059618}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3E619E1-49F1-41F9-B072-E05449059618}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -131,6 +137,7 @@ Global
 		{C8DF8AE3-0A4D-445D-993E-F7A1784BFDD4} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
 		{BF414C86-DB3B-4022-9B29-DCE8AA954C12} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{A8CE6B0F-E054-45F7-B4D7-23D2C65D2D26} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
+		{D3E619E1-49F1-41F9-B072-E05449059618} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
